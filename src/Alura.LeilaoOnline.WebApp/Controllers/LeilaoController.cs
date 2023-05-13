@@ -1,23 +1,18 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Alura.LeilaoOnline.WebApp.Dados;
 using Alura.LeilaoOnline.WebApp.Models;
 using System;
-using System.Collections.Generic;
+using Alura.LeilaoOnline.WebApp.Dados;
 
 namespace Alura.LeilaoOnline.WebApp.Controllers
 {
     public class LeilaoController : Controller
     {
+        ILeilaoDao _leilaoDao;
 
-        AppDbContext _context;
-        LeilaoDao _leilaoDao;
-
-        public LeilaoController()
+        public LeilaoController(ILeilaoDao leilaoDao)
         {
-            _context = new AppDbContext();
-            _leilaoDao = new LeilaoDao();
+            _leilaoDao = leilaoDao;
         }
 
         public IActionResult Index()
@@ -29,7 +24,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         [HttpGet]
         public IActionResult Insert()
         {
-            ViewData["Categorias"] = BuscarCategorias();
+            ViewData["Categorias"] = _leilaoDao.BuscarCategorias();
             ViewData["Operacao"] = "Inclusão";
             return View("Form");
         }
@@ -42,7 +37,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
                 _leilaoDao.Incluir(model);
                 return RedirectToAction("Index");
             }
-            ViewData["Categorias"] = BuscarCategorias();
+            ViewData["Categorias"] = _leilaoDao.BuscarCategorias();
             ViewData["Operacao"] = "Inclusão";
             return View("Form", model);
         }
@@ -50,7 +45,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            ViewData["Categorias"] = BuscarCategorias();
+            ViewData["Categorias"] = _leilaoDao.BuscarCategorias();
             ViewData["Operacao"] = "Edição";
             var leilao = _leilaoDao.BuscarPorId(id);
             if (leilao == null) return NotFound();
@@ -65,7 +60,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
                _leilaoDao.Alterar(model);
                 return RedirectToAction("Index");
             }
-            ViewData["Categorias"] = BuscarCategorias();
+            ViewData["Categorias"] = _leilaoDao.BuscarCategorias();
             ViewData["Operacao"] = "Edição";
             return View("Form", model);
         }
@@ -116,10 +111,7 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
                 );
             return View("Index", leiloes);
         }
-        private IEnumerable<Categoria> BuscarCategorias()
-        {
-            return _context.Categorias.ToList();
-        }
+       
         
     }
 }
