@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Alura.LeilaoOnline.WebApp.Models;
 using System.Linq;
 using System.Collections.Generic;
-using Alura.LeilaoOnline.WebApp.Dados.Efcore;
 using Alura.LeilaoOnline.WebApp.Dados;
 
 namespace Alura.LeilaoOnline.WebApp.Controllers
@@ -14,15 +13,15 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
     {
         ILeilaoDao _leilaoDao;
 
-        public LeilaoApiController()
+        public LeilaoApiController(ILeilaoDao leilaoDao)
         {
-            _leilaoDao = new LeilaoDaoComEfCore();   
+            _leilaoDao = leilaoDao;   
         }
 
         [HttpGet]
         public IActionResult EndpointGetLeiloes()
         {
-            var leiloes = _leilaoDao.BuscarLeiloes();
+            var leiloes = _leilaoDao.BuscarTodos();
             return Ok(leiloes);
         }
 
